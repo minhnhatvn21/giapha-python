@@ -3,146 +3,319 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gia Phả Dòng Họ - Vercel</title>
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <title>Họ Ngô Việt Nam - Gia Phả</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
     <style>
-        /* (Giữ nguyên CSS cũ của bản Demo trước, tôi rút gọn để tiết kiệm chỗ) */
-        :root { --bg-paper: #fdfbf0; --primary-color: #5d4037; }
-        body { font-family: 'Roboto', sans-serif; background: var(--bg-paper); color: #3e2723; padding: 20px; }
-        h1 { text-align: center; font-family: 'Merriweather', serif; color: var(--primary-color); }
-        
-        /* CSS TREE VIEW */
-        .tree ul { padding-top: 20px; position: relative; transition: all 0.5s; display: flex; justify-content: center; }
-        .tree li { float: left; text-align: center; list-style-type: none; position: relative; padding: 20px 5px 0 5px; }
-        .tree li::before, .tree li::after { content: ''; position: absolute; top: 0; right: 50%; border-top: 1px solid #5d4037; width: 50%; height: 20px; }
-        .tree li::after { right: auto; left: 50%; border-left: 1px solid #5d4037; }
-        .tree li:only-child::after, .tree li:only-child::before { display: none; }
-        .tree li:only-child { padding-top: 0; }
-        .tree li:first-child::before, .tree li:last-child::after { border: 0 none; }
-        .tree li:last-child::before { border-right: 1px solid #5d4037; border-radius: 0 5px 0 0; }
-        .tree li:first-child::after { border-radius: 5px 0 0 0; }
-        .tree ul ul::before { content: ''; position: absolute; top: 0; left: 50%; border-left: 1px solid #5d4037; width: 0; height: 20px; }
-        
-        .member-card { border: 1px solid #5d4037; padding: 10px; background: #fff; border-radius: 5px; min-width: 120px; cursor: pointer; }
-        .member-card:hover { background: #5d4037; color: #fff; }
+        /* --- 1. BIẾN MÀU SẮC (THEME NGÔ TỘC) --- */
+        :root {
+            --primary-red: #b71c1c;       /* Đỏ đậm của header */
+            --bright-red: #d32f2f;        /* Đỏ tươi hơn cho button */
+            --gold-text: #ffff00;         /* Chữ vàng */
+            --bg-body: #f5f5f5;           /* Nền xám nhạt bao ngoài */
+            --bg-content: #fff9c4;        /* Nền vàng nhạt khu vực nội dung (Giống ảnh) */
+            --border-color: #fbc02d;      /* Viền vàng đậm */
+            --tree-line: #9e9e9e;         /* Màu đường kẻ cây */
+        }
 
-        /* Form nhập liệu đơn giản */
-        .admin-panel { max-width: 600px; margin: 20px auto; padding: 20px; border: 1px dashed #5d4037; background: #fff; }
-        input, select { padding: 8px; margin: 5px 0; width: 100%; box-sizing: border-box; }
-        button { background: #5d4037; color: white; padding: 10px; border: none; cursor: pointer; width: 100%; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--primary-red); /* Nền tổng thể màu đỏ */
+            margin: 0; padding: 0;
+        }
+
+        /* --- 2. HEADER --- */
+        header {
+            background: var(--primary-red);
+            /* Giả lập họa tiết rồng phượng bằng gradient hoặc ảnh nền nếu có */
+            background-image: radial-gradient(circle, #d32f2f 10%, #b71c1c 90%);
+            color: var(--gold-text);
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 3px solid #ffca28;
+        }
+        .logo-text {
+            font-size: 28px; font-weight: bold; text-transform: uppercase;
+            text-shadow: 2px 2px 4px #000;
+        }
+        
+        /* Navbar */
+        .navbar {
+            background-color: #e53935;
+            display: flex; justify-content: center;
+            border-bottom: 2px solid #b71c1c;
+        }
+        .navbar a {
+            color: #fff; text-decoration: none; padding: 10px 20px;
+            font-weight: bold; font-size: 14px; text-transform: uppercase;
+        }
+        .navbar a:hover { background-color: #b71c1c; color: var(--gold-text); }
+
+        /* --- 3. LAYOUT CHÍNH --- */
+        .container {
+            max-width: 1200px; margin: 0 auto;
+            background-color: #fff;
+            display: grid;
+            grid-template-columns: 250px 1fr; /* Cột trái 250px, Cột phải còn lại */
+            min-height: 100vh;
+        }
+
+        /* Sidebar bên trái */
+        .sidebar {
+            background-color: #fffde7;
+            border-right: 1px solid #ddd;
+            padding: 10px;
+        }
+        .sidebar-box {
+            border: 1px solid #d7ccc8; margin-bottom: 15px;
+        }
+        .sidebar-header {
+            background: url('https://ngotoc.vn/images/bg-title-left.png') no-repeat center;
+            background-size: cover;
+            background-color: #a1887f; /* Fallback color */
+            color: #5d4037;
+            font-weight: bold; text-align: center; padding: 10px;
+            font-family: serif;
+        }
+        .menu-list a {
+            display: block; padding: 8px; border-bottom: 1px dashed #ccc;
+            text-decoration: none; color: #333; font-size: 13px;
+        }
+        .menu-list a:hover { color: #d32f2f; }
+
+        /* Nội dung chính bên phải */
+        .main-content {
+            padding: 20px;
+            background-color: var(--bg-content); /* Nền vàng nhạt giống ảnh */
+        }
+        
+        .breadcrumb {
+            background: #fff59d; padding: 8px; border: 1px solid #fbc02d;
+            font-size: 12px; margin-bottom: 20px;
+            color: #333;
+        }
+
+        /* --- 4. TREE VIEW STYLE (GIỐNG NGOTOC.VN) --- */
+        .tree-container {
+            border: 1px solid #fbc02d;
+            padding: 20px;
+            background-color: #fffce3;
+            font-size: 14px;
+        }
+
+        ul.tree, ul.tree ul {
+            list-style-type: none;
+            margin: 0; padding: 0;
+        }
+        
+        /* Thụt đầu dòng cho cấp con */
+        ul.tree ul { margin-left: 20px; }
+
+        ul.tree li {
+            margin: 0; padding: 0 12px;
+            line-height: 25px;
+            position: relative;
+            border-left: 1px dotted #999; /* Đường kẻ dọc */
+        }
+
+        /* Đường kẻ ngang nối vào tên */
+        ul.tree li:before {
+            content: "";
+            position: absolute; top: 12px; left: 0;
+            width: 10px; height: 1px;
+            border-top: 1px dotted #999;
+        }
+        
+        /* Xử lý node cuối cùng để không kẻ dọc thừa xuống dưới */
+        ul.tree li:last-child { border-left: none; }
+        ul.tree li:last-child:before {
+            border-left: 1px dotted #999;
+            height: 13px; top: 0; width: 10px;
+        }
+
+        /* Nút bấm mở rộng/thu gọn */
+        .toggle-btn {
+            cursor: pointer; display: inline-block; width: 14px; height: 14px;
+            border: 1px solid #999; background: #fff;
+            line-height: 12px; text-align: center; font-size: 10px;
+            margin-right: 5px; color: #666;
+            position: relative; z-index: 10;
+        }
+        
+        /* Style cho tên thành viên */
+        .member-row { cursor: pointer; display: inline-flex; align-items: center; }
+        .member-row:hover .name { color: red; text-decoration: underline; }
+        
+        .code { font-weight: bold; color: #333; margin-right: 5px; font-size: 0.9em; }
+        .icon { margin-right: 5px; width: 16px; text-align: center; }
+        .icon.male { color: #1565c0; }
+        .icon.female { color: #c62828; }
+        .name { font-weight: bold; color: #b71c1c; }
+        .spouse-name { color: #555; font-size: 0.9em; margin-left: 5px; font-style: italic; }
+
+        /* Ẩn hiện nhánh con */
+        .nested { display: none; }
+        .active { display: block; }
+        
+        /* Form nhập liệu nhanh (ẩn) */
+        #input-panel {
+            display: none; position: fixed; bottom: 10px; right: 10px;
+            background: white; border: 2px solid #b71c1c; padding: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5); z-index: 1000;
+        }
+
     </style>
 </head>
 <body>
 
-    <h1>Gia Phả Dòng Họ (Online)</h1>
-    
-    <div class="admin-panel">
-        <h3>Thêm thành viên mới</h3>
-        <input type="text" id="inpName" placeholder="Họ và tên (Ví dụ: Nguyễn Văn A)">
-        <input type="text" id="inpDates" placeholder="Năm sinh - Năm mất (VD: 1990 - ...)">
-        <select id="inpParent">
-            <option value="">-- Chọn Cha/Mẹ (Nếu là Thủy tổ thì để trống) --</option>
-        </select>
-        <button onclick="addMember()">Lưu vào Gia Phả</button>
+    <header>
+        <div class="logo-text">HỌ NGÔ VIỆT NAM</div>
+        <div style="font-size: 14px;">Kết nối dòng tộc - Tìm về cội nguồn</div>
+    </header>
+
+    <div class="navbar">
+        <a href="/">Trang chủ</a>
+        <a href="#">Giới thiệu</a>
+        <a href="#">Gia Phả</a>
+        <a href="#">Tin tức</a>
+        <a href="#">Liên hệ</a>
+        <a href="#" onclick="document.getElementById('input-panel').style.display='block'">[+] Thêm người</a>
     </div>
 
-    <div class="tree" id="genealogy-tree">
-        <p style="text-align:center">Đang tải dữ liệu từ Firebase...</p>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-box">
+                <div class="sidebar-header">DANH MỤC</div>
+                <div class="menu-list">
+                    <a href="#">Lịch sử họ Ngô</a>
+                    <a href="#">Danh nhân họ Ngô</a>
+                    <a href="#">Văn hóa - Đời sống</a>
+                    <a href="#">Cây gia phả</a>
+                </div>
+            </div>
+            <div class="sidebar-box">
+                <div class="sidebar-header">THỐNG KÊ</div>
+                <div style="padding: 10px; font-size: 12px;">
+                    <p><i class="fa fa-users"></i> Thành viên: {{ tree|length }}</p>
+                    <p><i class="fa fa-eye"></i> Đang truy cập: 1</p>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="breadcrumb">
+                Trang chủ / Gia Phả / HỌ NGÔ - CHI ...
+            </div>
+
+            {% macro render_node(member) %}
+                <li>
+                    <div class="member-row">
+                        {% if member.children %}
+                            <span class="toggle-btn" onclick="toggleNode(this)">-</span>
+                        {% else %}
+                            <span style="display:inline-block; width:14px; margin-right:5px;"></span>
+                        {% endif %}
+
+                        <span class="code">{{ member.code }}</span>
+                        
+                        {% if member.gender == 'female' %}
+                            <i class="fa fa-female icon female"></i>
+                        {% else %}
+                            <i class="fa fa-user icon male"></i>
+                        {% endif %}
+                        
+                        <span class="name">{{ member.name }}</span>
+                        
+                        {% if member.birth_date %}
+                            <span style="font-size:11px; color:#666">({{ member.birth_date }})</span>
+                        {% endif %}
+                    </div>
+
+                    {% if member.children %}
+                        <ul class="nested active">
+                            {% for child in member.children %}
+                                {{ render_node(child) }}
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </li>
+            {% endmacro %}
+
+            <div class="tree-container">
+                <h3 style="color: #b71c1c; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
+                    <i class="fa fa-sitemap"></i> PHẢ ĐỒ
+                </h3>
+                <ul class="tree">
+                    {% if tree %}
+                        {% for root in tree %}
+                            {{ render_node(root) }}
+                        {% endfor %}
+                    {% else %}
+                        <p>Chưa có dữ liệu. Vui lòng thêm Thủy tổ.</p>
+                    {% endif %}
+                </ul>
+            </div>
+        </main>
+    </div>
+
+    <div id="input-panel">
+        <h4>Thêm thành viên</h4>
+        <input type="text" id="inpName" placeholder="Họ tên" style="width:100%; margin-bottom:5px;">
+        <input type="text" id="inpDate" placeholder="Năm sinh" style="width:100%; margin-bottom:5px;">
+        <select id="inpGender" style="width:100%; margin-bottom:5px;">
+            <option value="male">Nam</option>
+            <option value="female">Nữ</option>
+        </select>
+        <input type="text" id="inpParentId" placeholder="ID Cha (Để trống nếu là Thủy tổ)" style="width:100%; margin-bottom:5px;">
+        
+        <button onclick="addMember()" style="background:var(--primary-red); color:white; border:none; padding:5px 10px; cursor:pointer;">Lưu</button>
+        <button onclick="document.getElementById('input-panel').style.display='none'" style="cursor:pointer;">Đóng</button>
     </div>
 
     <script>
-        let allMembers = [];
-
-        // 1. Lấy dữ liệu từ Python API
-        async function fetchMembers() {
-            const res = await fetch('/api/members');
-            allMembers = await res.json();
-            
-            // Cập nhật dropdown chọn cha
-            updateParentSelect();
-            
-            // Vẽ cây
-            const treeContainer = document.getElementById('genealogy-tree');
-            if (allMembers.length === 0) {
-                treeContainer.innerHTML = "<p style='text-align:center'>Chưa có dữ liệu. Hãy thêm Thủy tổ trước.</p>";
-            } else {
-                // Tìm Root (người không có parent_id hoặc parent_id là chuỗi rỗng)
-                const roots = allMembers.filter(m => !m.parent_id);
-                let html = '<ul>';
-                roots.forEach(root => {
-                    html += buildTreeHTML(root);
-                });
-                html += '</ul>';
-                treeContainer.innerHTML = html;
+        // 1. Script đóng mở cây (Toggle)
+        function toggleNode(btn) {
+            // Tìm thẻ ul ngay sau cha của nút bấm
+            var nested = btn.parentElement.nextElementSibling;
+            if (nested) {
+                if (nested.classList.contains('active')) {
+                    nested.classList.remove('active');
+                    btn.innerText = "+"; // Đổi dấu
+                } else {
+                    nested.classList.add('active');
+                    btn.innerText = "-";
+                }
             }
         }
 
-        // 2. Hàm đệ quy vẽ HTML cây (từ dữ liệu phẳng sang cây)
-        function buildTreeHTML(person) {
-            // Tìm con của người này
-            const children = allMembers.filter(m => m.parent_id === person.id);
-            
-            let html = `
-                <li>
-                    <div class="member-card">
-                        <strong>${person.name}</strong><br>
-                        <small>${person.dates}</small>
-                    </div>`;
-            
-            if (children.length > 0) {
-                html += '<ul>';
-                children.forEach(child => {
-                    html += buildTreeHTML(child);
-                });
-                html += '</ul>';
-            }
-            
-            html += `</li>`;
-            return html;
-        }
-
-        // 3. Cập nhật danh sách chọn Cha
-        function updateParentSelect() {
-            const select = document.getElementById('inpParent');
-            select.innerHTML = '<option value="">-- Là Thủy tổ (Không có cha) --</option>';
-            allMembers.forEach(m => {
-                const opt = document.createElement('option');
-                opt.value = m.id;
-                opt.innerText = m.name;
-                select.appendChild(opt);
-            });
-        }
-
-        // 4. Gửi dữ liệu lên API
+        // 2. Script Thêm người (Call API)
         async function addMember() {
             const name = document.getElementById('inpName').value;
-            const dates = document.getElementById('inpDates').value;
-            const parentId = document.getElementById('inpParent').value;
+            const parentId = document.getElementById('inpParentId').value;
+            const gender = document.getElementById('inpGender').value;
+            const date = document.getElementById('inpDate').value;
 
-            if(!name) return alert("Vui lòng nhập tên!");
-
-            const data = {
-                name: name,
-                dates: dates,
-                parent_id: parentId || null
-            };
+            if(!name) return alert("Chưa nhập tên");
 
             const res = await fetch('/api/members', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(data)
+                body: JSON.stringify({
+                    name: name,
+                    parent_id: parentId,
+                    gender: gender,
+                    birth_date: date
+                })
             });
 
             if(res.ok) {
-                alert("Đã thêm thành công!");
-                location.reload(); // Tải lại trang để thấy mới
+                alert("Đã thêm! Load lại trang để thấy.");
+                location.reload();
             } else {
-                alert("Lỗi khi lưu!");
+                alert("Lỗi!");
             }
         }
-
-        // Chạy khi mở trang
-        fetchMembers();
     </script>
 </body>
 </html>
