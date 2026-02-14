@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gia Phả Dòng Họ - Vercel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* (Giữ nguyên CSS cũ của bản Demo trước, tôi rút gọn để tiết kiệm chỗ) */
+        :root { --bg-paper: #fdfbf0; --primary-color: #5d4037; }
+        body { font-family: 'Roboto', sans-serif; background: var(--bg-paper); color: #3e2723; padding: 20px; }
+        h1 { text-align: center; font-family: 'Merriweather', serif; color: var(--primary-color); }
+        
+        /* CSS TREE VIEW */
+        .tree ul { padding-top: 20px; position: relative; transition: all 0.5s; display: flex; justify-content: center; }
+        .tree li { float: left; text-align: center; list-style-type: none; position: relative; padding: 20px 5px 0 5px; }
+        .tree li::before, .tree li::after { content: ''; position: absolute; top: 0; right: 50%; border-top: 1px solid #5d4037; width: 50%; height: 20px; }
+        .tree li::after { right: auto; left: 50%; border-left: 1px solid #5d4037; }
+        .tree li:only-child::after, .tree li:only-child::before { display: none; }
+        .tree li:only-child { padding-top: 0; }
+        .tree li:first-child::before, .tree li:last-child::after { border: 0 none; }
+        .tree li:last-child::before { border-right: 1px solid #5d4037; border-radius: 0 5px 0 0; }
+        .tree li:first-child::after { border-radius: 5px 0 0 0; }
+        .tree ul ul::before { content: ''; position: absolute; top: 0; left: 50%; border-left: 1px solid #5d4037; width: 0; height: 20px; }
+        
+        .member-card { border: 1px solid #5d4037; padding: 10px; background: #fff; border-radius: 5px; min-width: 120px; cursor: pointer; }
+        .member-card:hover { background: #5d4037; color: #fff; }
+
+        /* Form nhập liệu đơn giản */
+        .admin-panel { max-width: 600px; margin: 20px auto; padding: 20px; border: 1px dashed #5d4037; background: #fff; }
+        input, select { padding: 8px; margin: 5px 0; width: 100%; box-sizing: border-box; }
+        button { background: #5d4037; color: white; padding: 10px; border: none; cursor: pointer; width: 100%; }
+    </style>
+</head>
+<body>
+
+    <h1>Gia Phả Dòng Họ (Online)</h1>
+    
+    <div class="admin-panel">
+        <h3>Thêm thành viên mới</h3>
+        <input type="text" id="inpName" placeholder="Họ và tên (Ví dụ: Nguyễn Văn A)">
+        <input type="text" id="inpDates" placeholder="Năm sinh - Năm mất (VD: 1990 - ...)">
+        <select id="inpParent">
+            <option value="">-- Chọn Cha/Mẹ (Nếu là Thủy tổ thì để trống) --</option>
+        </select>
+        <button onclick="addMember()">Lưu vào Gia Phả</button>
+    </div>
+
+    <div class="tree" id="genealogy-tree">
+        <p style="text-align:center">Đang tải dữ liệu từ Firebase...</p>
+    </div>
+
+    <script>
+        let allMembers = [];
+
+        // 1. Lấy dữ liệu từ Python API
+        async function fetchMembers() {
+            const res = await fetch('/api/members');
+            allMembers = await res.json();
+            
+            // Cập nhật dropdown chọn cha
+            updateParentSelect();
+            
+            // Vẽ cây
+            const treeContainer = document.getElementById('genealogy-tree');
+            if (allMembers.length === 0) {
+                treeContainer.innerHTML = "<p style='text-align:center'>Chưa có dữ liệu. Hãy thêm Thủy tổ trước.</p>";
+            } else {
+                // Tìm Root (người không có parent_id hoặc parent_id là chuỗi rỗng)
+                const roots = allMembers.filter(m => !m.parent_id);
+                let html = '<ul>';
+                roots.forEach(root => {
+                    html += buildTreeHTML(root);
+                });
+                html += '</ul>';
+                treeContainer.innerHTML = html;
+            }
+        }
+
+        // 2. Hàm đệ quy vẽ HTML cây (từ dữ liệu phẳng sang cây)
+        function buildTreeHTML(person) {
+            // Tìm con của người này
+            const children = allMembers.filter(m => m.parent_id === person.id);
+            
+            let html = `
+                <li>
+                    <div class="member-card">
+                        <strong>${person.name}</strong><br>
+                        <small>${person.dates}</small>
+                    </div>`;
+            
+            if (children.length > 0) {
+                html += '<ul>';
+                children.forEach(child => {
+                    html += buildTreeHTML(child);
+                });
+                html += '</ul>';
+            }
+            
+            html += `</li>`;
+            return html;
+        }
+
+        // 3. Cập nhật danh sách chọn Cha
+        function updateParentSelect() {
+            const select = document.getElementById('inpParent');
+            select.innerHTML = '<option value="">-- Là Thủy tổ (Không có cha) --</option>';
+            allMembers.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m.id;
+                opt.innerText = m.name;
+                select.appendChild(opt);
+            });
+        }
+
+        // 4. Gửi dữ liệu lên API
+        async function addMember() {
+            const name = document.getElementById('inpName').value;
+            const dates = document.getElementById('inpDates').value;
+            const parentId = document.getElementById('inpParent').value;
+
+            if(!name) return alert("Vui lòng nhập tên!");
+
+            const data = {
+                name: name,
+                dates: dates,
+                parent_id: parentId || null
+            };
+
+            const res = await fetch('/api/members', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+
+            if(res.ok) {
+                alert("Đã thêm thành công!");
+                location.reload(); // Tải lại trang để thấy mới
+            } else {
+                alert("Lỗi khi lưu!");
+            }
+        }
+
+        // Chạy khi mở trang
+        fetchMembers();
+    </script>
+</body>
+</html>
